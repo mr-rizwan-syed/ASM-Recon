@@ -15,6 +15,12 @@ command_exists() {
 
 
 dependency_installer(){
+
+    if ! command_exists gobuster; then
+        echo "${YELLOW}[*] Installing gobuster ${NC}"
+        apt-get install -y gobuster &>/dev/null
+    fi
+
     if ! command_exists pv; then
         apt-get install -y pv &>/dev/null
     fi
@@ -193,7 +199,6 @@ dependency_installer(){
         echo "${YELLOW}[*] Installing Katana ${NC}"
         go install github.com/projectdiscovery/katana/cmd/katana@latest 2>/dev/null | pv -p -t -e -N "Installing Tool: katana" &>/dev/null
     fi
-  
 }
 
 dependency_installer2(){
@@ -239,7 +244,7 @@ dependency_installer2(){
 
 }
 
-required_tools=("pv" "go" "python3" "ccze" "git" "pip" "pup" "knockknock" "subfinder" "naabu" "dnsx" "httpx" "csvcut" "dmut" "dirsearch" "ffuf" "nuclei" "nmap" "ansi2html" "xsltproc" "trufflehog" "anew" "interlace" "subjs" "katana")
+required_tools=("gobuster" "pv" "go" "python3" "ccze" "git" "pip" "pup" "knockknock" "subfinder" "naabu" "dnsx" "httpx" "csvcut" "dmut" "dirsearch" "ffuf" "nuclei" "nmap" "ansi2html" "xsltproc" "trufflehog" "anew" "interlace" "subjs" "katana")
 missing_tools=()
 for tool in "${required_tools[@]}"; do
     if ! command -v "$tool" &>/dev/null 2>&1; then
@@ -249,6 +254,21 @@ for tool in "${required_tools[@]}"; do
         echo "Installed ${GREEN}$tool${NC}"
     fi
 done
+
+download_wordlist() {
+    local url="https://raw.githubusercontent.com/maurosoria/dirsearch/master/db/dicc.txt"
+    local destination="/usr/share/dirb/wordlists/dicc.txt"
+
+    echo "Downloading wordlist..."
+    if curl -s -o "$destination" "$url"; then
+        echo "Wordlist downloaded successfully!"
+    else
+        echo "Failed to download the wordlist."
+    fi
+}
+
+# Run the function
+download_wordlist
 
 if [ ${#missing_tools[@]} -ne 0 ]; then
     echo -e ""
@@ -260,3 +280,4 @@ else
     echo -e ""
     echo -e "${GREEN}All Good - JOD ${NC}"
 fi
+
