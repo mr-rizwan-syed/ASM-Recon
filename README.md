@@ -16,4 +16,5 @@ cd asm-recom
 chmod +x *.sh
 ./goinstaller.sh
 ./install.sh
+python3 ASM-Recon.py <URL> <PROJECT_NAME>
 ```
